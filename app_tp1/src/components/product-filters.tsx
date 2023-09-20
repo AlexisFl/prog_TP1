@@ -11,12 +11,17 @@ import { TextInput } from '@mantine/core';
 import { Checkbox } from '@mantine/core';
 import { Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import {ProductFilterResult} from "@/types";
+import {ProductsCategoryData} from "tp-kit/types";
 
 
 
+type Props = {
+    categories: ProductsCategoryData[];
+    onChange: (values: ProductFilterResult) => void
+}
 
-
-const ProductFilters = ({categories, onChange}) => {
+const ProductFilters = ({categories, onChange}:Props) => {
     const form = useForm({
         initialValues: {
             search: '',
@@ -29,7 +34,7 @@ const ProductFilters = ({categories, onChange}) => {
     });
 
     return (
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form onSubmit={form.onSubmit((values) => onChange && onChange(values))}>
             <TextInput
                 placeholder="Search"
                 {...form.getInputProps('search')}

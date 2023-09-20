@@ -6,6 +6,8 @@ const categories = PRODUCTS_CATEGORY_DATA;
 
 import ProductFilters from "src/components/product-filters";
 
+
+
 export default function Home() {
   return (
     <main>
