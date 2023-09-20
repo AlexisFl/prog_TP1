@@ -4,6 +4,8 @@ import {BreadCrumbs, Button, Heading, SectionContainer} from "tp-kit/components"
 import {ProductCardLayout, ProductGridLayout} from "tp-kit/components/products";
 const categories = PRODUCTS_CATEGORY_DATA;
 
+import ProductFilters from "src/components/product-filters";
+
 export default function Home() {
   return (
     <main>
@@ -17,6 +19,7 @@ export default function Home() {
                 }
             ]}
         />
+        <ProductFilters categories={categories} />
         <SectionContainer>
             {categories.map(category => (
                 <div key={category.id}>
