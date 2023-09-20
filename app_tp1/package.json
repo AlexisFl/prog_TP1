@@ -2,6 +2,9 @@
   "name": "app_tp1",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "tp-kit"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
