@@ -1,63 +1,71 @@
-// créer un composant client "ProductFilters" qui affiche les filtres de recherche
-//ce composant devra afficher un champ de recherche par nom de produit
-//ce composant devra afficher une liste de checkboxes permettant de filtrer les produits par catégories
-//ce composant devra afficher un bouton "Filtrer" qui permettra de lancer la recherche
 "use client";
-import { PRODUCTS_CATEGORY_DATA } from "tp-kit/data";
-import {BreadCrumbs, Button, Heading, SectionContainer} from "tp-kit/components";
-import {ProductCardLayout, ProductGridLayout} from "tp-kit/components/products";
-const categories = PRODUCTS_CATEGORY_DATA;
-import { TextInput } from '@mantine/core';
-import { Checkbox } from '@mantine/core';
-import { Group } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import {ProductFilterResult} from "@/types";
-import {ProductsCategoryData} from "tp-kit/types";
 
-
+import { FC, memo, useCallback } from "react";
+import { ProductsCategoryData } from "tp-kit/types";
+import { ProductFiltersResult } from "../types";
+import { useForm } from "@mantine/form";
+import { TextInput, Checkbox } from "@mantine/core";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import { Button } from "tp-kit/components";
 
 type Props = {
-    categories: ProductsCategoryData[];
-    onChange: (values: ProductFilterResult) => void
-}
+  categories: ProductsCategoryData[];
+  onChange: (values: ProductFiltersResult) => void;
+};
 
-const ProductFilters = ({categories, onChange}:Props) => {
-    const form = useForm({
-        initialValues: {
-            search: '',
-            categories: []
-        },
-        validationRules: {
-            search: (value) => value.trim().length > 2,
-            categories: (value) => value.length > 0
-        }
+const ProductFilters: FC<Props> = memo(function ({ categories, onChange }) {
+  /**
+   * Initializes the form with empty fields. Never let a field undefined to let react properly controls the inputs
+   */
+  const form = useForm<ProductFiltersResult>({
+    initialValues: {
+      search: "",
+      categoriesSlugs: [],
+    },
+  });
+
+  /**
+   * Fired when form is submitted : send the form values to the parent component 
+   */
+  const handleSubmit = useCallback((values: ProductFiltersResult) => {
+    onChange({
+      categoriesSlugs: values.categoriesSlugs,
+      search: values.search || undefined
     });
+  }, [onChange]);
 
-    return (
-        <form onSubmit={form.onSubmit((values) => onChange && onChange(values))}>
-            <TextInput
-                placeholder="Search"
-                {...form.getInputProps('search')}
-            />
-            <Checkbox.Group
-                defaultValue={['react']}
-                label="Categories"
-                {...form.getInputProps('categories')}
-                >
-                <Group>
+  return (
+    <form onSubmit={form.onSubmit(handleSubmit)} className="space-y-8 mt-16">
+      {/* Search field */}
+      <TextInput
+        id="search-input"
+        placeholder="Rechercher une boisson"
+        icon={<MagnifyingGlass size={24} weight="duotone" className="text-brand" />}
+        {...form.getInputProps("search")}
+      />
 
-                    {categories.map(category => (
-                        <Checkbox label={category.name} value={category.slug}>{category.name}</Checkbox>
+      {/* Categories checkbox list */}
+      <Checkbox.Group
+        className="space-y-2"
+        {...form.getInputProps("categoriesSlugs")}
+      >
+        {categories.map((cat) => (
+          <Checkbox
+            key={cat.id}
+            id={cat.id.toString()}
+            label={`${cat.name} (${cat.products.length})`}
+            value={cat.slug}
+          />
+        ))}
+      </Checkbox.Group>
 
-                    ))}
+      {/* Submit button */}
+      <Button fullWidth type={"submit"}>
+        Filtrer
+      </Button>
+    </form>
+  );
+});
 
-                </Group>
-            </Checkbox.Group>
-            <Button variant="ghost" type={"submit"}>Search</Button>
-
-        </form>
-
-    );
-}
-
-export default ProductFilters;
+ProductFilters.displayName = "ProductFilters";
+export { ProductFilters };
